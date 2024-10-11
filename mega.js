@@ -34,3 +34,13 @@ var upload = (pth) => {
 };
 
 module.exports = { upload };
+
+/*
+* IN CASE IF YOUR LOOKING FOR MEDIA UPLOAD THEN HERE
+* (and dont wanna go through the docs of megajs then)
+*
+* var size = statSync(filePath).size;
+* var stream = storage.upload({ name: myre, size: size, allowUploadBuffering: true });
+* createReadStream(filePath).pipe(stream);
+* stream.on('complete', (file) => file.link((err, url) => err ? reject(err) : resolve(url)));
+*/
