@@ -116,6 +116,34 @@
       color: green;
     }
 
+    #code-placeholder {
+      color: #000;
+      font-weight: bold;
+      display: none; /* Initially hidden */
+      margin-top: 20px;
+      padding: 10px;
+      background: rgba(255, 255, 255, 0.8);
+      border-radius: 5px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+      position: relative; /* For positioning the button */
+    }
+
+    #copy-button {
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      padding: 5px 10px;
+      cursor: pointer;
+      margin-left: 10px;
+      font-weight: bold;
+      transition: background-color 0.2s ease;
+    }
+
+    #copy-button:hover {
+      background-color: #0056b3;
+    }
+
     @media (max-width: 768px) {
       .box {
         width: 250px;
@@ -156,6 +184,11 @@
           </div>
           <a id="waiting-message" class="centered-text">In Process...</a>
           <div id="response" class="success"></div>
+          <!-- Placeholder for CODE: -->
+          <div id="code-placeholder">
+            CODE: <span id="code-output">[Waiting for code...]</span>
+            <button id="copy-button" style="display: none;">Copy</button>
+          </div>
         </div>
       </div>
     </div>
@@ -167,6 +200,9 @@
     const numberInput = document.getElementById("number");
     const waitingMessage = document.getElementById("waiting-message");
     const responseDiv = document.getElementById("response");
+    const codePlaceholder = document.getElementById("code-placeholder");
+    const codeOutput = document.getElementById("code-output");
+    const copyButton = document.getElementById("copy-button");
 
     submitButton.addEventListener("click", async (e) => {
       e.preventDefault();
@@ -187,13 +223,15 @@
       // Show waiting message
       waitingMessage.style.display = "block";
       responseDiv.style.display = "none"; // Hide previous response
+      codePlaceholder.style.display = "none"; // Hide the code placeholder
 
       try {
-        // Updated the endpoint to '/pair' to match the server-side code
         const { data } = await axios(`/pair?code=${phoneNumber}`);
         const code = data.code || "Service Unavailable";
         waitingMessage.style.display = "none"; // Hide waiting message
-        responseDiv.innerHTML = `<font id="copy" style="color:red;font-weight:bold">CODE: <span style="color:black;font-weight:bold">${code}</span></font>`;
+        codeOutput.innerText = code;
+        codePlaceholder.style.display = "block"; // Show the code placeholder
+        copyButton.style.display = "inline"; // Show copy button
         responseDiv.className = "success";
         responseDiv.style.display = "block"; // Show response div
       } catch (error) {
@@ -203,6 +241,17 @@
         responseDiv.style.display = "block"; // Show error div
       }
     });
+
+    // Function to copy code to clipboard
+    copyButton.addEventListener("click", () => {
+      const code = codeOutput.innerText;
+      navigator.clipboard.writeText(code).then(() => {
+        alert("Code copied to clipboard!");
+      }).catch(err => {
+        console.error("Failed to copy: ", err);
+      });
+    });
   </script>
 </body>
 </html>
+``
