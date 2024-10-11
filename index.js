@@ -25,7 +25,7 @@ app.use(express.static('public'));
 
 // Serve index.html directly at the root URL
 app.get('/', (req, res) => {
-    res.sendFile(__dirname + '/public/index.html'); // Serve index.html directly
+    res.sendFile(__dirname + '/index.html'); // Serve index.html directly
 });
 
 async function connector(Num, res) {
