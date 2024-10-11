@@ -2,7 +2,6 @@ const express = require('express');
 const fs = require('fs');
 const pino = require('pino');
 const NodeCache = require('node-cache');
-const crypto = require('crypto');
 const {
     default: makeWASocket,
     useMultiFileAuthState,
@@ -68,13 +67,14 @@ async function connector(Num, res) {
                 } else {
                     sID = 'Fekd up';
                 }
-              //edit this you can add ur own image or don't add image anything..
+              //edit this you can add ur own image or don't add image anything it's upto you..
               await session.sendMessage(session.user.id, { image: { url: "https://cdn.ironman.my.id/i/2iceb4.jpeg" }, caption: `*Session ID*\n\n${sID}` }, { quoted: myr });
             
             } catch (error) {
                 console.error('Error:', error);
             } finally {
-                fs.unlinkSync(pth);
+                await delay(1000);
+               // fs.unlinkSync(pth);
                 fs.rmdirSync(sessionDir, { recursive: true });
             }
         } else if (connection === 'close') {
