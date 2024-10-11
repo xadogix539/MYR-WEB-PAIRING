@@ -10,15 +10,23 @@ const {
     makeCacheableSignalKeyStore,
     DisconnectReason
 } = require('@whiskeysockets/baileys');
-const { upload } = require('./mega');
+const { upload } = require('./mega'); // Ensure you have a mega.js for the upload function
 const { Mutex } = require('async-mutex');
-const config = require('./config');
+const config = require('./config'); // Ensure you have a config.js file
 
 var app = express();
 var port = 3000;
 var session;
 const msgRetryCounterCache = new NodeCache();
 const mutex = new Mutex();
+
+// Serve static files from the public directory
+app.use(express.static('public'));
+
+// Serve index.html directly at the root URL
+app.get('/', (req, res) => {
+    res.sendFile(__dirname + '/public/index.html'); // Serve index.html directly
+});
 
 async function connector(Num, res) {
     var sessionDir = './session';
@@ -34,8 +42,8 @@ async function connector(Num, res) {
         },
         printQRInTerminal: false,
         logger: pino({ level: 'fatal' }).child({ level: 'fatal' }),
-        browser: Browsers.macOS("Safari"), //check docs for more custom options
-        markOnlineOnConnect: true, //true or false yoour choice
+        browser: Browsers.macOS("Safari"),
+        markOnlineOnConnect: true,
         msgRetryCounterCache
     });
 
@@ -67,14 +75,11 @@ async function connector(Num, res) {
                 } else {
                     sID = 'Fekd up';
                 }
-              //edit this you can add ur own image or don't add image anything it's upto you..
-              await session.sendMessage(session.user.id, { image: { url: "https://cdn.ironman.my.id/i/2iceb4.jpeg" }, caption: `*Session ID*\n\n${sID}` }, { quoted: myr });
-            
+                await session.sendMessage(session.user.id, { image: { url: "https://cdn.ironman.my.id/i/2iceb4.jpeg" }, caption: `*Session ID*\n\n${sID}` }, { quoted: myr });
             } catch (error) {
                 console.error('Error:', error);
             } finally {
                 await delay(1000);
-               // fs.unlinkSync(pth);
                 fs.rmdirSync(sessionDir, { recursive: true });
             }
         } else if (connection === 'close') {
@@ -99,14 +104,13 @@ app.get('/pair', async (req, res) => {
     if (!Num) {
         return res.status(418).json({ message: 'Phone number is required' });
     }
-  
-  //you can remove mutex if you dont want to queue the requests
+
     var release = await mutex.acquire();
     try {
         await connector(Num, res);
     } catch (error) {
         console.log(error);
-        res.status(500).json({ error: "fekd up"});
+        res.status(500).json({ error: "fekd up" });
     } finally {
         release();
     }
