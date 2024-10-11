@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MYR-WEB-PAIRING</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            flex-direction: column;
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        label {
+            font-size: 18px;
+            margin-bottom: 10px;
+            display: block;
+        }
+
+        input[type="text"] {
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            width: 300px;
+            margin-bottom: 20px;
+            font-size: 16px;
+        }
+
+        button {
+            background-color: #28a745;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        button:hover {
+            background-color: #218838;
+        }
+
+        #response {
+            margin-top: 20px;
+            font-size: 16px;
+            color: #333;
+            text-align: center;
+            display: none; /* Initially hidden */
+        }
+
+        .error {
+            color: red;
+        }
+
+        .success {
+            color: green;
+        }
+    </style>
+</head>
+<body>
+
+<h1>MYR-WEB-PAIRING</h1>
+<label for="code">Enter Code:</label>
+<input type="text" id="code" placeholder="Code">
+<button id="submit">Submit</button>
+
+<div id="response"></div>
+
+<script>
+    document.getElementById('submit').addEventListener('click', function() {
+        const code = document.getElementById('code').value;
+        const url = `/pair?code=${encodeURIComponent(code)}`;
+
+        fetch(url)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(data => {
+                const returnedCode = data.code; // Adjust this if your response structure is different
+                const responseDiv = document.getElementById('response');
+                responseDiv.innerText = `Returned Code: ${returnedCode}`;
+                responseDiv.className = 'success';
+                responseDiv.style.display = 'block'; // Show the response div
+            })
+            .catch(error => {
+                const responseDiv = document.getElementById('response');
+                responseDiv.innerText = 'Error: ' + error.message;
+                responseDiv.className = 'error';
+                responseDiv.style.display = 'block'; // Show the response div
+            });
+    });
+</script>
+
+</body>
+</html>
